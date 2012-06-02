@@ -1,10 +1,9 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 in 2011/2012
+ * written by oMeN23 in 2011
  * If you think this is useful, use it!
  * copyleft, open and free!
  * file: hash.c (hashing)
- * Written by David Schuster -- contact david [dot] schuster [at] kdemail [dot] net 
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,17 +15,19 @@
 #include <errno.h>
 #include "login.h"
 
-/* this function calculates a string which represents
- * the hash of the user's password
+/* this function calculates a hex-string which represents
+ * the hash of the user's password or any value
+ * arg1 = the value
+ * arg2 = the destination (caller has to allocate dynamic or automatic memory and free it eventually after)
+ * arg3 = the algorithm (see libgcrypt docs)
+ * arg4 = some flags (see below)
+ * 0 = none, 
+ * GCRY_MGCRY_MD_FLAG_SECURE = 1,   Allocate all buffers in "secure" memory.  
+ * GCRY_MD_FLAG_HMAC = 2,   Make an HMAC out of this algorithm.  
  */
 void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
   
-   /* if (!gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P)) { 
-      gcrypt_init();
-      fputs("Had to re-initialize gcrypt library ...", stderr);
-    }
-    */
-
+    gcrypt_init();
     gcry_md_hd_t	Crypto_handle = NULL; /* crypto context handle */
     gcry_error_t	Crypto_error = 0;
 
@@ -62,9 +63,9 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         /* finalize calculation */
         gcry_md_final(Crypto_handle);
         /* allocate (secure) heap memory for the hash */
-        unsigned char* byte_result = gcry_malloc_secure(gcry_md_get_algo_dlen(algo));
+        unsigned char* byte_result = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4); // NOTE: we actually ran out of space here once
         /* helpers to make them human readable and comparable */
-        unsigned char* helper = gcry_malloc_secure(gcry_md_get_algo_dlen(algo) / 2);
+        unsigned char* helper = gcry_malloc_secure(16); /* actually only need 1 char */
 
         if (!gcry_is_secure(byte_result) || !gcry_is_secure(helper)) {
             fprintf(stderr, "Could not allocate in secure memory!\n");
@@ -72,9 +73,15 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         }
 
         /* copy hash into a RAW string [ignore warnings from here until the string concat] - the compiler will moan about the signedness */
-        strcpy((char*)byte_result, (char*)gcry_md_read(Crypto_handle, algo)); /* only one algo in the obj, pass 0 for default */
-        memset((void*)dest, 0, sizeof(dest)); /* clear memory where hash is to be written, THIS IS REALLY IMPORTANT */
-        if (dest == NULL) abort(); /* the caller has to allocate the destination memory */
+        strcpy((char*)byte_result, (char*)gcry_md_read(Crypto_handle, algo)); /* read in the raw byte string */
+	if (dest == NULL) { /* the caller has to allocate the destination memory */
+	  fprintf(stderr, "Hashing-Function: destination memory adress is not valid!\n\
+	  The caller of this function is responsible for allocating a destination buffer that is large enough\n\
+	  for holding the hashed value\n");
+	  abort(); 
+	}
+        memset((void*)dest, 0, sizeof(dest)); /* clear memory where hash is to be written, in case its dyn. alloc'd (heap) memory - so we dont get a garbage result */
+        
 
         /* format the raw string to hex notation and
          * pass it piece by piece into our char *dest
@@ -83,7 +90,7 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
             sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
             stringconcat(dest, (const char*)helper);
         }
-        dest[ strlen( dest ) ] = 0;
+        dest[ strlen( dest ) ] = '\0';
         /* generally clean up after ourselves ... */
         gcry_md_close(Crypto_handle); /* releases all security relevant information */
 	Crypto_handle = NULL;
@@ -95,4 +102,22 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
 	
     } else	/* if the hash mechanism isnt working abort */
         abort();
+}
+
+void gcrypt_init() {
+  static bool initialized = false;
+  if (gcry_control (GCRYCTL_INITIALIZATION_FINISHED_P) || initialized)
+    return;
+  
+  if (!gcry_check_version(GCRYPT_VERSION)) {
+    fprintf(stderr, "fatal error: libgcrypt version mismatch\n");
+    abort();
+  }  
+  /* this is the actual library initialization
+   * with a sec mem starting pool of 64k */
+  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
+  gcry_control(GCRYCTL_INIT_SECMEM, 16384*4, 0);
+  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
+  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+  initialized = true;
 }

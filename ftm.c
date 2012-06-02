@@ -1,7 +1,3 @@
-/* This page is part of release 3.27 of the Linux man-pages project.  A description
- * of  the  project,  and  information  about  reporting  bugs,  can  be  found  at
- * http://www.kernel.org/doc/man-pages/.
- */
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
