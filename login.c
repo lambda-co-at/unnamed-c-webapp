@@ -1,10 +1,9 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 in 2011/2012
+ * written by oMeN23 in 2011
  * If you think this is useful, use it!
  * copyleft, open and free!
  * file: login.c (main)
- * Written by David Schuster -- contact david [dot] schuster [at] kdemail [dot] net 
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,6 +13,7 @@
 #include <stdbool.h>
 #include <gcrypt.h>
 #include <errno.h>
+#include <time.h>
 #include "login.h"
 
 /* does the user exist in the db */
@@ -64,8 +64,8 @@ bool login(const char* username,	/* username */
            const char* sql_statement)	/* the sql statement to be executed against the Database or NULL */
 {
     /* check for user overflow attempts */
-    if (stringlength(username) > USERBUF - 8 || stringlength(password) > USERBUF - 8) {
-        fprintf(stderr, "Username and/or password too long! Max. %d characters.\n", USERBUF - 8);
+    if (stringlength(username) > USERBUF - 6 || stringlength(password) > USERBUF - 6) {
+        fprintf(stderr, "Username and/or password too long! Max. %d characters.\n", USERBUF - 6);
         fprintf(stderr, "Make a different choice, please.\n");
         abort();
     }
@@ -77,7 +77,7 @@ bool login(const char* username,	/* username */
     /* PREREQUESITES AND MEM ALLOC */
     sqlite3*	Db_object = NULL;
     char*		errormsg;
-    
+    gcrypt_init(); /* initialize mem manager and stuff so lib doesnt complain */
     
     login_data_t container = gcry_malloc_secure(sizeof *container);
 
@@ -107,18 +107,10 @@ bool login(const char* username,	/* username */
     if (err != SQLITE_OK) {
         fprintf(stderr, "Database connection failed, something went wrong.\n");
         abort();
-    }
-    /* HASHING FUNCTION
-     * assign the hash to its field
-     * arg1 = pw/value
-     * arg2 = dest
-     * arg3 = algo -> look up in gcrypt-doc
-     * arg4 = flags -> 
-     * 0 = none, 
-     * GCRY_MGCRY_MD_FLAG_SECURE = 1,   Allocate all buffers in "secure" memory.  
-     * GCRY_MD_FLAG_HMAC = 2,   Make an HMAC out of this algorithm.  */
-#ifdef HASH
-    hash_func(container->password, container->hash, GCRY_MD_TIGER, GCRY_MD_FLAG_SECURE); 
+    }    
+     
+#ifdef HASH /* call of the hashing function -> hash.c */
+    hash_func(container->password, container->hash, GCRY_MD_TIGER, GCRY_MD_FLAG_SECURE);  // TODO XXX change 6 with 306
     fprintf(stderr, "Trying to log in as \n'%s' \nwith hashed-pw \n'%s'\n", container->username, container->hash);
 #else
     fprintf(stderr, "Trying to log in as '%s'\n", container->username);
@@ -134,7 +126,7 @@ bool login(const char* username,	/* username */
         }
          if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
 	 own_sql = false;
-	 fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 (NULL) or empty!\n");
+	 fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
 	}
 
         /*if (sql_statement == NULL) {
@@ -169,7 +161,7 @@ bool login(const char* username,	/* username */
     if (err != SQLITE_OK) { 
     //	    ^^ er == 4 ? callback returned 1 (or any nonzero value)			
     //      fprintf(stderr, "SQL notice: callback requested query abort because a match was found.\n"); old logic part          
-            fprintf(stderr, "SQL error: %s.\n", errormsg ); // sqlite3_errmsg(Db_object)
+            fprintf(stderr, "SQL error: %s\n", errormsg ); // sqlite3_errmsg(Db_object)
 	    sqlite3_free(errormsg);
     }
     /* clean up the DB connection */
@@ -232,8 +224,9 @@ void build_sql_string(const char* username, char* dest)
  */
 int main(int argc, char* argv[])
 {
+  
     /* get user data - change this so it suits your needs - try to use secure storage */
-    if (!argv[1] || !argv[2]) abort();
+    if (!argv[1] || !argv[2]) { printf("please supply two args\n"); abort(); }
     char* user = argv[1];
     char* pass = argv[2];
     
@@ -242,7 +235,7 @@ int main(int argc, char* argv[])
                            pass,	/* this variable will be garbage after the login */
                            false,	/* own sql statement suppplied as arg4(true) or default func(false), I'd go with this setting */
                            NULL);	/* sql string like "select * from users;" or NULL pointer for default func */
-
+    
     if (logged_on)
     {
         /* log-in succeeded - do what you like here */

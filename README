@@ -1,0 +1,41 @@
+Written by omen23 -- David Schuster in 2012 (david [dot] schuster [at] kdemail [dot] net)
+Open and free! (but please give me some credit =)
+
+This is an interface to a sqlite3 database which stores its keys hashed or in plain
+text. So it is designed for a login-procedure and was thought to be useful
+for CGI login handling. The hashing capabilities can be turnt off in case you
+are lazy enough to check your passwords or keys plain-text.
+
+OK enough -- this is what this package provides:
+login.c - login routine and sqlite3 callback (with an example main function)
+hash.c - the hashing function which is used in the login program 
+	 which can also be used on its own - demonstrated by the small "hashit" util
+hashit.c - a small utility that can generate digests of all implemented gcrypt
+	   hashing algorithms (e.g. for generation of your keys)
+ftm.c - feature test macros
+login.h - a header file where all the fun is defined :)
+
+There is a Makefile for convenience - just type "make" and if you have a debian based
+system with "libgcrypt-dev" and "libsqlite3-dev" installed everything should work OOB.
+(and obviously make itself :P I guess this is called build-essentials)
+
+The makefile provides a few targets:
+
+"make" which is equivalent to "make debug" - builds everything 
+(the main program is built with all debugging symbols)
+"make pedantic" - showed a few warning on earlier gcc versions
+all this is fixed now
+"make feature" - to only generate the feature test program
+"make hash" - to only generate the small hashing utility
+"make release" - to generate the program with optimization on and strip from symbols
+"make clean" - to delete all files that are (side)products of the compilation or
+	       editing process
+
+
+If you have problems setting this up - contact me! I cannot promise that I will answer
+because my inbox is always really full. The string macros supplied use GNU extensions
+or BSD versions of the standard implementation. (strlen, strcat, strcpy)
+
+-Wno-pointer-sign -funsigned-char were used tho compile this with gcc before version
+4.5 I guess - the code was fixed or the compiler or both.
+(This code is under development since quite a while)
