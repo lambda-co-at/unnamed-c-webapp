@@ -1,30 +1,30 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 in 2011/2012
+ * written by oMeN23 in 2011
  * If you think this is useful, use it!
  * copyleft, open and free!
  * file: login.h (headerfile)
- * Written by David Schuster -- contact david [dot] schuster [at] kdemail [dot] net 
  */
 #ifndef _LOGIN_H_
 #define _LOGIN_H_
-#pragma once
+#pragma once // NOTE: does this work on our compiler (gcc) ? (back of my mind tells me only msvc supports this) 
 
+/* This code conforms to the ISO C99 standard and makes heavy use of GNU extensions */
 #define _ISOC99_SOURCE
+#define _GNU_SOURCE
 
 #ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#else
 #warning "Using GNU EXTENSIONS highly improves security \
 of this program, the other features are deprecated! \
-Trying to define GNU extensions, if this fails \
+Tried to define GNU extensions, if this fails \
 change login.h."
 #endif // ifndef _GNU_SOURCE
 
-#define GCRYPT_NO_DEPRECATED
-#define HASH	/* IF THIS TOKEN IS UNDEF'D YOU HAVE A SQLITE INTERFACE PROGRAM WITHOUT HASHING CAPABILITIES */
-#define DATABASE	"ex1.db"	/* specify full db path if db is not in binary's folder or launch binary from db's folder */
+#define GCRYPT_NO_DEPRECATED // we dont want to use old library routines
+#define HASH	/* IF THIS TOKEN IS UNDEF'D YOU HAVE A SQLITE INTERFACE PROGRAM WITHOUT HASHING CAPABILITIES (pass match is done plain-text - so dont undef this) */
+#define DATABASE	"ex1.db"	/* path to a sqlite3 database - specify full db path if db is not in binary's folder or launch binary from db's folder */
 
+/* multi-platform string routines */
 #if defined _GNU_SOURCE
  size_t strnlen(const char* string, size_t maxlen);
  #define stringlength(x)	strnlen(x, USERBUF)
@@ -41,8 +41,8 @@ change login.h."
 #endif
 
 /* buffers */
-#define LARGEBUF	640
-#define USERBUF		64
+#define LARGEBUF	(1 << 12) // 4096
+#define USERBUF		(1 << 8) // 256
 
 /* user data definitions - mostly hidden - only in use in the interior of the login func */
 typedef struct {
@@ -67,5 +67,5 @@ void build_sql_string(const char* username, char* destination);
 /* this function calculates a string which represents
  * the hash of the user's password */
 void hash_func(const char* value, char* destination, int algo, unsigned int flags);
-
+void gcrypt_init( void );
 #endif // _LOGIN_H_
