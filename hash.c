@@ -1,6 +1,6 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 in 2011
+ * written by oMeN23 in 2011-2012
  * If you think this is useful, use it!
  * copyleft, open and free!
  * file: hash.c (hashing)
@@ -18,7 +18,7 @@
 /* this function calculates a hex-string which represents
  * the hash of the user's password or any value
  * arg1 = the value
- * arg2 = the destination (caller has to allocate dynamic or automatic memory and free it eventually after)
+ * arg2 = the destination (caller has to allocate dynamic or automatic memory and free it eventually after) - min. (gcry_md_get_algo_dlen(algo)*4) for hex notation
  * arg3 = the algorithm (see libgcrypt docs)
  * arg4 = some flags (see below)
  * 0 = none, 
@@ -28,13 +28,13 @@
 void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
   
     gcrypt_init();
-    gcry_md_hd_t	Crypto_handle = NULL; /* crypto context handle */
+    gcry_md_hd_t	Crypto_handle; /* crypto context handle */
     gcry_error_t	Crypto_error = 0;
 
     /* determine pw length + 1 (macro handles it), max USERBUF , not overflowable MACRO USED */
     size_t text_length = stringlength(value) + 1; /* terminating null, shouldnt make a diff, sys dependend,  this is correct */
     /* check if the library is working as it should .. */
-    Crypto_error = gcry_md_open(&Crypto_handle, algo, flags); /* FIXME let go of this mem when finished */
+    Crypto_error = gcry_md_open(&Crypto_handle, algo, flags);
     if (Crypto_error || Crypto_handle == NULL)
         fprintf(stderr, "Failure: %s\t/\t%s\n",
                 gcry_strsource(Crypto_error),
@@ -66,37 +66,40 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         unsigned char* byte_result = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4); // NOTE: we actually ran out of space here once
         /* helpers to make them human readable and comparable */
         unsigned char* helper = gcry_malloc_secure(16); /* actually only need 1 char */
-
-        if (!gcry_is_secure(byte_result) || !gcry_is_secure(helper)) {
+	
+        if ( !gcry_is_secure(helper)|| !gcry_is_secure(byte_result)) {
             fprintf(stderr, "Could not allocate in secure memory!\n");
             abort();
         }
-
-        /* copy hash into a RAW string [ignore warnings from here until the string concat] - the compiler will moan about the signedness */
-        strcpy((char*)byte_result, (char*)gcry_md_read(Crypto_handle, algo)); /* read in the raw byte string */
+	// NOTE: 10.6.2012 fixed a strcpy issue - where digests with a value of zer0 [00] in the middle would be 
+	// cut off - using memcpy instead
+        /* copy hash into a RAW string */
+        memcpy(byte_result, gcry_md_read(Crypto_handle, algo), gcry_md_get_algo_dlen(algo)*2); /* read in the raw byte string - size times two for hex notation */
+		
 	if (dest == NULL) { /* the caller has to allocate the destination memory */
-	  fprintf(stderr, "Hashing-Function: destination memory adress is not valid!\n\
+	  fprintf(stderr, "\t  Hashing-Function: destination memory adress is not valid!\n\
 	  The caller of this function is responsible for allocating a destination buffer that is large enough\n\
-	  for holding the hashed value\n");
+	  for holding the digest value\n");
 	  abort(); 
 	}
-        memset((void*)dest, 0, sizeof(dest)); /* clear memory where hash is to be written, in case its dyn. alloc'd (heap) memory - so we dont get a garbage result */
+        memset((void*)dest, 0, sizeof(dest)); /* clear memory where hash is to be written */
         
 
         /* format the raw string to hex notation and
          * pass it piece by piece into our char *dest
          * and concatenate */
-        for (int i = 0; i < stringlength((const char*)byte_result); i++) {
+        for (int i = 0; i < gcry_md_get_algo_dlen(algo); i++)  {
             sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
             stringconcat(dest, (const char*)helper);
         }
         dest[ strlen( dest ) ] = '\0';
         /* generally clean up after ourselves ... */
         gcry_md_close(Crypto_handle); /* releases all security relevant information */
-	Crypto_handle = NULL;
+	gcry_free(Crypto_handle);	
         gcry_free(byte_result);
         gcry_free(helper);
 	Crypto_error = 0;
+	Crypto_handle = NULL;
 	byte_result = NULL;
 	helper = NULL;
 	
@@ -115,9 +118,9 @@ void gcrypt_init() {
   }  
   /* this is the actual library initialization
    * with a sec mem starting pool of 64k */
-  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN);
-  gcry_control(GCRYCTL_INIT_SECMEM, 16384*4, 0);
-  gcry_control(GCRYCTL_RESUME_SECMEM_WARN);
+  gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN),
+  gcry_control(GCRYCTL_INIT_SECMEM, 16384*4, 0),
+  gcry_control(GCRYCTL_RESUME_SECMEM_WARN),
   gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
   initialized = true;
 }
