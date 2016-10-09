@@ -29,30 +29,24 @@ static int callback (void* logindata,	/* sql_exec passes its forth argument in h
                      char** Db_entries,	/* array of strings which represent the indiviual entries of this row ![REMEMBER the callback gets called for every ROW] */
                      char** azColName)	/* the matching row name for the above strings eg.: azColname[0] = "username", Db_entries[0] = "man" in the last call */
 {
-    bool	usr1 = false;
-    bool	pw1  = false;
-    login_data_t userdata = (login_data_t)logindata;
-    /* basically iterate over the data we get - check for match
-     * thats why we gotta return 0 if we have no match
-     * the callback wouldnt get called again for the next row
-     */
-    for (int i = 0 ; i < numArgs; i++) {
-        if (Db_entries[i] != NULL) {
-            if (strcmp(Db_entries[i], userdata->username) == 0) {
-                usr1 = true;
-                isRegistered = true; /* username found in db (as we got a callback) -> search for matching pw */
-            }
-            if (strcmp(Db_entries[i], userdata->hash) == 0)
-                pw1 = true;
-        }
+  login_data_t userdata = (login_data_t)logindata;
+  /* basically iterate over the data we get - check for match
+   * thats why we gotta return 0 if we have no match
+   * the callback wouldnt get called again for the next row
+   */
+  for (int i = 0 ; i < numArgs; i++) {
+    if (/*Db_entries[i] != NULL &&*/ !strcmp(azColName[0], "username")) {
+      if (!strcmp(Db_entries[0], userdata->username)) {        
+        isRegistered = true; /* username found in db (if check) -> search for matching pw */
+      }
+    } if (/*Db_entries[i] != NULL &&*/ !strcmp(azColName[1], "password")) {
+        if (isRegistered && !strcmp(Db_entries[1], userdata->hash)) {
+          isLoggedOn = true; 
+          return 0;
+        }      
+      }   
     }
-    if (usr1 && pw1) {	/* successfully logged in */
-        isLoggedOn = true;
-        return 0; /* ABORT match found */
-    } else {
-        fprintf(stderr, "No match found!\n");
-        return 0;		/* no match found */
-    }
+  return 0;
 }
 
 /* in this function im trying to handle the login event and interface with sqlite
