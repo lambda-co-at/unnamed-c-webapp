@@ -82,7 +82,7 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
 	  for holding the digest value\n");
 	  abort(); 
 	}
-        memset((void*)dest, 0, sizeof(dest)); /* clear memory where hash is to be written */
+        memset((void*)dest, 0, 48); /* clear memory where hash is to be written */
         
 
         /* format the raw string to hex notation and
