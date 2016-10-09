@@ -66,8 +66,8 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         unsigned char* byte_result = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4); // NOTE: we actually ran out of space here once
         /* helpers to make them human readable and comparable */
         unsigned char* helper = gcry_malloc_secure(16); /* actually only need 1 char */
-	
-        if ( !gcry_is_secure(helper)|| !gcry_is_secure(byte_result)) {
+	unsigned char* final = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4);
+        if ( !gcry_is_secure(helper)|| !gcry_is_secure(byte_result) || !gcry_is_secure(final)) {
             fprintf(stderr, "Could not allocate in secure memory!\n");
             abort();
         }
@@ -76,12 +76,13 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         /* copy hash into a RAW string */
         memcpy(byte_result, gcry_md_read(Crypto_handle, algo), gcry_md_get_algo_dlen(algo)*2); /* read in the raw byte string - size times two for hex notation */
 		
-	if (dest == NULL) { /* the caller has to allocate the destination memory */
-	  fprintf(stderr, "\t  Hashing-Function: destination memory adress is not valid!\n\
-	  The caller of this function is responsible for allocating a destination buffer that is large enough\n\
-	  for holding the digest value\n");
-	  abort(); 
-	}
+        if (dest == NULL) { /* the caller has to allocate the destination memory */
+          fprintf(stderr, " ---- [%s] ----\n\t  Hashing-Function: destination memory adress is not valid!\n\
+          The caller of this function is responsible\n\t  for allocating a destination buffer that is large enough\n\
+          for holding the digest value.\n\t  Returning as function return variable ...\n\t  This can lead to security problems\n\t  or memory leaks.\n", program_invocation_short_name);
+          errno = -EINVAL;
+          return (char*)final;
+        }
         memset((void*)dest, 0, 48); /* clear memory where hash is to be written */
         
 
