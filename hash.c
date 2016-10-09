@@ -86,8 +86,8 @@ char* hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         for (int i = 0; i < gcry_md_get_algo_dlen(algo); i++)  {
           sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
           stringconcat((char*)final, (const char*)helper);
-          }
         }
+        
 	
 	if (dest == NULL) { /* the caller has to allocate the destination memory */
           fprintf(stderr, " ---- [%s] ----\n\t  Hashing-Function: destination memory adress is not valid!\n\
