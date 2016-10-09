@@ -45,12 +45,12 @@ change login.h."
 #define USERBUF		(1 << 8) // 256
 
 /* user data definitions - mostly hidden - only in use in the interior of the login func */
-typedef struct {
+typedef struct login_data {
     char* username;
     char* password;
     char* hash;
-} login_data;
-typedef login_data* login_data_t;
+} *login_data_t;
+
 
 /* function prototypes */
 /* in this function im trying to handle the login event and interface with sqlite
@@ -66,6 +66,6 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
 void build_sql_string(const char* username, char* destination);
 /* this function calculates a string which represents
  * the hash of the user's password */
-void hash_func(const char* value, char* destination, int algo, unsigned int flags);
+char* hash_func(const char* value, char* destination, int algo, unsigned int flags);
 void gcrypt_init( void );
 #endif // _LOGIN_H_
