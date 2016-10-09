@@ -1,4 +1,4 @@
-Written by omen23 -- David Schuster in 2012 (david [dot] schuster [at] kdemail [dot] net)
+Written by omen23 -- David Schuster © in 2012-2016 (david [dot] schuster [at] kdemail [dot] net)
 Open and free! (but please give me some credit =)
 
 This is an interface to a sqlite3 database which stores its keys hashed or in plain
