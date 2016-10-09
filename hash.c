@@ -25,7 +25,7 @@
  * GCRY_MGCRY_MD_FLAG_SECURE = 1,   Allocate all buffers in "secure" memory.  
  * GCRY_MD_FLAG_HMAC = 2,   Make an HMAC out of this algorithm.  
  */
-void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
+char* hash_func(const char* value, char* dest, int algo, unsigned int flags) {
   
     gcrypt_init();
     gcry_md_hd_t	Crypto_handle; /* crypto context handle */
@@ -106,10 +106,13 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
 	gcry_free(Crypto_handle);	
         gcry_free(byte_result);
         gcry_free(helper);
+	gcry_free(final);
+	final = NULL;
 	Crypto_error = 0;
 	Crypto_handle = NULL;
 	byte_result = NULL;
 	helper = NULL;
+	return dest;
 	
     } else	/* if the hash mechanism isnt working abort */
         abort();
