@@ -76,23 +76,30 @@ void hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         /* copy hash into a RAW string */
         memcpy(byte_result, gcry_md_read(Crypto_handle, algo), gcry_md_get_algo_dlen(algo)*2); /* read in the raw byte string - size times two for hex notation */
 		
-        if (dest == NULL) { /* the caller has to allocate the destination memory */
-          fprintf(stderr, " ---- [%s] ----\n\t  Hashing-Function: destination memory adress is not valid!\n\
-          The caller of this function is responsible\n\t  for allocating a destination buffer that is large enough\n\
-          for holding the digest value.\n\t  Returning as function return variable ...\n\t  This can lead to security problems\n\t  or memory leaks.\n", program_invocation_short_name);
-          errno = -EINVAL;
-          return (char*)final;
-        }
-        memset((void*)dest, 0, 48); /* clear memory where hash is to be written */
+        
+        
         
 
         /* format the raw string to hex notation and
          * pass it piece by piece into our char *dest
          * and concatenate */
         for (int i = 0; i < gcry_md_get_algo_dlen(algo); i++)  {
-            sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
-            stringconcat(dest, (const char*)helper);
+          sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
+          stringconcat((char*)final, (const char*)helper);
+          }
         }
+	
+	if (dest == NULL) { /* the caller has to allocate the destination memory */
+          fprintf(stderr, " ---- [%s] ----\n\t  Hashing-Function: destination memory adress is not valid!\n\
+          The caller of this function is responsible\n\t  for allocating a destination buffer that is large enough\n\
+          for holding the digest value.\n\t  Returning as function return variable ...\n\t  This can lead to security problems\n\t  or memory leaks.\n", program_invocation_short_name);
+          errno = -EINVAL;
+          return (char*)final;
+        }
+	
+	
+	memset((void*)dest, 0, 48); /* clear memory where hash is to be written */
+	strncpy((void*)dest, (char*)final, strlen((char*)final));
         dest[ strlen( dest ) ] = '\0';
         /* generally clean up after ourselves ... */
         gcry_md_close(Crypto_handle); /* releases all security relevant information */
