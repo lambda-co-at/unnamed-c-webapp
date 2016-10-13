@@ -6,7 +6,6 @@
 #define _GNU_SOURCE
 #include "login.h"
 
-
 void hash_func(int algo, void* digest, const void* value, size_t len)
 {
   size_t algolen = gcry_md_get_algo_dlen(algo);
@@ -20,8 +19,7 @@ void hash_func(int algo, void* digest, const void* value, size_t len)
       stringconcat((char*)digest, (char*)helper);
   }
   gcry_free(helper);
-  gcry_free(byte_result);
-  
+  gcry_free(byte_result);  
 }
 
 void gcrypt_init()
