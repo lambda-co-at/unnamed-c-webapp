@@ -63,7 +63,7 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
  * sql string for our purposes
  * arg1 is the username
  * arg2 is to where to write the string */
-void build_sql_string(const char* username, char* destination);
+void build_sql_string(char* dest, const char* username);
 /* this function calculates a string which represents
  * the hash of the user's password */
 void hash_func(int algo, void* digest, const void* value, size_t len);
