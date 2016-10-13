@@ -60,13 +60,14 @@ char* hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         for (int x = 0 ; x < text_length; x++) {
             gcry_md_putc(Crypto_handle, (unsigned char)value[x]);
         }
+	size_t algolen = gcry_md_get_algo_dlen(algo);
         /* finalize calculation */
         gcry_md_final(Crypto_handle);
         /* allocate (secure) heap memory for the hash */
-        unsigned char* byte_result = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4); // NOTE: we actually ran out of space here once
+        unsigned char* byte_result = gcry_malloc_secure(algolen*4); // NOTE: we actually ran out of space here once
         /* helpers to make them human readable and comparable */
         unsigned char* helper = gcry_malloc_secure(16); /* actually only need 1 char */
-	unsigned char* final = gcry_malloc_secure(gcry_md_get_algo_dlen(algo)*4);
+	unsigned char* final = gcry_malloc_secure(algolen*4);
         if ( !gcry_is_secure(helper)|| !gcry_is_secure(byte_result) || !gcry_is_secure(final)) {
             fprintf(stderr, "Could not allocate in secure memory!\n");
             abort();
@@ -74,7 +75,7 @@ char* hash_func(const char* value, char* dest, int algo, unsigned int flags) {
 	// NOTE: 10.6.2012 fixed a strcpy issue - where digests with a value of zer0 [00] in the middle would be 
 	// cut off - using memcpy instead
         /* copy hash into a RAW string */
-        memcpy(byte_result, gcry_md_read(Crypto_handle, algo), gcry_md_get_algo_dlen(algo)*2); /* read in the raw byte string - size times two for hex notation */
+        memcpy(byte_result, gcry_md_read(Crypto_handle, algo), algolen); /* read in the raw byte string - size times two for hex notation */
 		
         
         
@@ -83,24 +84,24 @@ char* hash_func(const char* value, char* dest, int algo, unsigned int flags) {
         /* format the raw string to hex notation and
          * pass it piece by piece into our char *dest
          * and concatenate */
-        for (int i = 0; i < gcry_md_get_algo_dlen(algo); i++)  {
+        for (int i = 0; i < algolen; i++)  {
           sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
           stringconcat((char*)final, (const char*)helper);
         }
         
 	
 	if (dest == NULL) { /* the caller has to allocate the destination memory */
-          fprintf(stderr, " ---- [%s] ----\n\t  Hashing-Function: destination memory adress is not valid!\n\
-          The caller of this function is responsible\n\t  for allocating a destination buffer that is large enough\n\
-          for holding the digest value.\n\t  Returning as function return variable ...\n\t  This can lead to security problems\n\t  or memory leaks.\n", program_invocation_short_name);
+          fprintf(stderr, " ---- [%s] ----\n Hashing-Function: destination memory adress is NULL!\n", program_invocation_short_name);
+          fprintf(stderr, " The caller of this function is responsible\n for allocating a destination buffer that is large enough for\n");
+          fprintf(stderr, " holding the digest value.\n Returning as function return variable ...\n This can lead to security problems\n and memory leaks.\n");
           errno = -EINVAL;
-          return (char*)final;
+          return (char*)final;          
         }
 	
 	
-	memset((void*)dest, 0, 48); /* clear memory where hash is to be written */
+	memset((void*)dest, 0, algolen*2); /* clear memory where hash is to be written */
 	strncpy((void*)dest, (char*)final, strlen((char*)final));
-        dest[ strlen( dest ) ] = '\0';
+        dest[ algolen*2 ] = '\0';
         /* generally clean up after ourselves ... */
         gcry_md_close(Crypto_handle); /* releases all security relevant information */
 	gcry_free(Crypto_handle);	
