@@ -40,3 +40,5 @@ or BSD versions of the standard implementation. (strlen, strcat, strcpy)
 	
 This software now produces the right digests. Sorry there is no test database but everything should be working now.
 Thanks, David
+
+p.s.: maybe try "user" as first program parameter and "test" as second - it should work (=
