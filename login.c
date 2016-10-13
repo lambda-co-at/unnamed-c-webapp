@@ -211,7 +211,7 @@ int main(int argc, char* argv[])
 {
   
   /* get user data - change this so it suits your needs - try to use secure storage */
-  if (!argv[1] || !argv[2]) { printf("please supply two args\n"); abort(); }
+  if (!argv[1] || !argv[2]) { printf("please supply two args\n"); exit(-1); }
   char* user = argv[1];
   char* pass = argv[2];
   
