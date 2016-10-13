@@ -13,9 +13,9 @@
 int main(int argc, char** argv) 
 {
   time_t thetime = time(NULL);
+  clock_t start = clock(), end;
   printf("hashit v0.2 - %s", ctime(&thetime));  
-  clock_t start, end;
-  start = clock();
+  gcrypt_init();
   int algo;
   char buffer[1<<12];
   
@@ -61,7 +61,7 @@ start:
   final = NULL;
   end = clock();
   double execution_time = (double) ((end - start) / CLOCKS_PER_SEC);
-  printf("Execution of the program took %.12lf secs\n",execution_time); //(double) ((end - start) / CLOCKS_PER_SEC) );
+  printf("Execution of the program took %.16Lf secs\n",execution_time); //(double) ((end - start) / CLOCKS_PER_SEC) );
 
   return 0;  
   
