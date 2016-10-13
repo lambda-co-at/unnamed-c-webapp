@@ -13,13 +13,13 @@
 int main(int argc, char** argv) 
 {
   time_t thetime = time(NULL);
-  printf("hashit v0.1 - %s", ctime(&thetime));  
+  printf("hashit v0.2 - %s", ctime(&thetime));  
   clock_t start, end;
   start = clock();
   int algo;
   char buffer[1<<12];
-  char final[1<<12];
-  gcrypt_init();
+  
+start: 
   printf("These are the available algorithms: \n\
     GCRY_MD_MD5     = 1,\n\
     GCRY_MD_SHA1    = 2,\n\
@@ -45,18 +45,20 @@ int main(int argc, char** argv)
   
   if (!rangeOk) { 
     printf("Select a valid algorithm please\n");
-    abort();   
+    goto start;   
   }
-  
+  char* final = gcry_malloc_secure((gcry_md_get_algo_dlen(algo)*2)+1);
   char* ptr = buffer;
   getchar(); // fall thru without this call 
   printf("What value do you want to hash? ");  
   fgets(ptr, sizeof buffer, stdin);  
   ptr[strlen(ptr)-1] = '\0'; // remove '\n' of fgets
     
-  char* hash = final;  
-  hash_func(ptr, hash, algo, GCRY_MD_FLAG_SECURE);    
+   
+  hash_func(final, ptr, algo, GCRY_MD_FLAG_SECURE);    
   printf("\"%s\" hashed is:\n%s\n", ptr, hash);
+  gcry_free(final);
+  final = NULL;
   end = clock();
   double execution_time = (double) ((end - start) / CLOCKS_PER_SEC);
   printf("Execution of the program took %.12lf secs\n",execution_time); //(double) ((end - start) / CLOCKS_PER_SEC) );
