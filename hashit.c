@@ -6,14 +6,7 @@
  * file: hashit.c (hashing-utility)
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <stdbool.h>
-#include <gcrypt.h>
-#include <errno.h>
-#include <time.h>
+#define _GNU_SOURCE
 #include "login.h"
 
 int main(int argc, char** argv) 
