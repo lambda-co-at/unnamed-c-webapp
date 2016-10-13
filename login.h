@@ -66,6 +66,6 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
 void build_sql_string(const char* username, char* destination);
 /* this function calculates a string which represents
  * the hash of the user's password */
-char* hash_func(const char* value, char* destination, int algo, unsigned int flags);
-void gcrypt_init( void );
+void hash_func(int algo, void* digest, const void* value, size_t len);
+void gcrypt_init(void);
 #endif // _LOGIN_H_
