@@ -77,7 +77,7 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
 void build_sql_string(char* dest, const char* username);
 /* this function calculates a string which represents
  * the hash of the user's password
- * dest has to be min. gcry_md_get_algo_dlen(algo)*4
+ * dest has to be min. gcry_md_get_algo_dlen(algo)*2 (+1)
  */
 void hash_func(int algo, void* digest, const void* value, size_t len);
 void gcrypt_init(void);
