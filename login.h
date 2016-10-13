@@ -10,8 +10,19 @@
 #pragma once // NOTE: does this work on our compiler (gcc) ? (back of my mind tells me only msvc supports this) 
 
 /* This code conforms to the ISO C99 standard and makes heavy use of GNU extensions */
-#define _ISOC99_SOURCE
 #define _GNU_SOURCE
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sqlite3.h>
+#include <stdbool.h>
+#include <gcrypt.h>
+#include <errno.h>
+#include <time.h>
+
 
 #ifndef _GNU_SOURCE
 #warning "Using GNU EXTENSIONS highly improves security \
@@ -65,7 +76,9 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
  * arg2 is to where to write the string */
 void build_sql_string(char* dest, const char* username);
 /* this function calculates a string which represents
- * the hash of the user's password */
+ * the hash of the user's password
+ * dest has to be min. gcry_md_get_algo_dlen(algo)*4
+ */
 void hash_func(int algo, void* digest, const void* value, size_t len);
 void gcrypt_init(void);
 #endif // _LOGIN_H_
