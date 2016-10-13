@@ -52,17 +52,17 @@ bool login(const char* username,	/* username */
   if (stringlength(username) > USERBUF - 6 || stringlength(password) > USERBUF - 6) {
     fprintf(stderr, "Username and/or password too long! Max. %d characters.\n", USERBUF - 6);
     fprintf(stderr, "Make a different choice, please.\n");
-    abort();
+    exit(1);
   }
   else if (stringlength(username) < 2 || stringlength(password) < 4) {
     fprintf(stderr, "Username min. 3 characters and password min. 4 characters.\n"); /* TODO ADJUST THIS IS FOR THE FINAL */
-    abort();
+    exit(1);
   }   
   
   /* PREREQUESITES AND MEM ALLOC */
   sqlite3*	Db_object = NULL;
   char*		errormsg;
- // gcrypt_init(); /* initialize mem manager and stuff so lib doesnt complain */
+  gcrypt_init(); /* initialize mem manager and stuff so lib doesnt complain */
   
   login_data_t container = gcry_malloc_secure(sizeof *container);
   
@@ -76,7 +76,7 @@ bool login(const char* username,	/* username */
   
   if (!gcry_is_secure(container->hash) || !gcry_is_secure(container) || !gcry_is_secure(container->password)) {
     fprintf(stderr, "Could not allocate in secure memory!\n");
-    abort();
+    exit(2);
   }
   
   strcpy(container->username, username);  /* copy userdata in secure mem */
@@ -91,7 +91,7 @@ bool login(const char* username,	/* username */
   
   if (err != SQLITE_OK) {
     fprintf(stderr, "Database connection failed, something went wrong.\n");
-    abort();
+    exit(3);
   }    
   
 #ifdef HASH /* call of the hashing function  -> hash.c .. change to GCRY_MD_TIGER1  */
@@ -107,7 +107,7 @@ bool login(const char* username,	/* username */
   if (own_sql)  {
     if (longstringlength(sql_statement) >= LARGEBUF) { /* FUNC MACRO USED */
       fprintf(stderr, "SQL statement too long. Max. %d characters.\n", LARGEBUF);
-      abort();
+      exit(4);
     }
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
@@ -120,7 +120,7 @@ bool login(const char* username,	/* username */
   }*/
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
       fprintf(stderr, "Cannot pass empty or nonsensical string as SQL statement!\n");
-      abort();
+      exit(5);
     }
     /* SQL OK copy it into our string - dest array should be clean so string isnt garbage */
     memset((void*)sql, 0, sizeof sql);
