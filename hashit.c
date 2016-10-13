@@ -56,7 +56,7 @@ start:
     
    
   hash_func(final, ptr, algo, GCRY_MD_FLAG_SECURE);    
-  printf("\"%s\" hashed is:\n%s\n", ptr, hash);
+  printf("\"%s\" hashed is:\n%s\n", ptr, final);
   gcry_free(final);
   final = NULL;
   end = clock();
