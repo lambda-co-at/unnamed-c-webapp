@@ -35,7 +35,8 @@ all this is fixed now
 If you have problems setting this up - contact me! I cannot promise that I will answer
 because my inbox is always really full. The string macros supplied use GNU extensions
 or BSD versions of the standard implementation. (strlen, strcat, strcpy)
-
--Wno-pointer-sign -funsigned-char were used tho compile this with gcc before version
-4.5 I guess - the code was fixed or the compiler or both.
-(This code is under development since quite a while)
+	
+	Friday, 14.10.2016 - COMPLETE REWRITE OF MODULAR HASHING SYSTEM
+	
+This software now produces the right digests. Sorry there is no test database but everything should be working now.
+Thanks, David
