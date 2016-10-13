@@ -1,7 +1,7 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
  * written by oMeN23 aka David Schuster © 2011-2016
- * If you think this is useful, use it! * 
+ * If you think this is useful, use it!  
  * file: login.c (main)
  */
 
