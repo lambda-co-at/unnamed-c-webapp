@@ -18,7 +18,9 @@ void hash_func(int algo, void* digest, const void* value, size_t len)
   for (int i = 0; i < algolen; i++)  {
       sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
       stringconcat((char*)digest, (char*)helper);
-  }  
+  }
+  gcry_free(helper);
+  gcry_free(byte_result);
   
 }
 
