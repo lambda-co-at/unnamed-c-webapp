@@ -13,7 +13,7 @@
 int main(int argc, char** argv) 
 {
   time_t thetime = time(NULL);
-  clock_t start = clock(), end;
+  //clock_t start = clock(), end;
   printf("hashit v0.2 - %s", ctime(&thetime));  
   gcrypt_init();
   int algo;
@@ -59,9 +59,11 @@ start:
   printf("\"%s\" hashed is:\n%s\n", ptr, final);
   gcry_free(final);
   final = NULL;
+  /*
   end = clock();
   double execution_time = (double) ((end - start) / CLOCKS_PER_SEC);
   printf("Execution of the program took %.16Lf secs\n",execution_time); //(double) ((end - start) / CLOCKS_PER_SEC) );
+  */
 
   return 0;  
   
