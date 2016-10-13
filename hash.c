@@ -1,18 +1,9 @@
 /*
  * new modular hash function for the sqlite3 interface
- * by David Schuster © 2016 *  
- * 
+ * by David Schuster © 2016  
  */
 
 #define _GNU_SOURCE
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sqlite3.h>
-#include <stdbool.h>
-#include <gcrypt.h>
-#include <errno.h>
 #include "login.h"
 
 
