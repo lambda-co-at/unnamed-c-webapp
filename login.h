@@ -79,6 +79,6 @@ void build_sql_string(char* dest, const char* username);
  * the hash of the user's password
  * digest has to be min. gcry_md_get_algo_dlen(algo)*2 (+1)
  */
-void hash_func(int algo, void* digest, const void* value, size_t len);
+void hash_func(int algo, char* digest, const void* value, size_t len);
 void gcrypt_init(void);
 #endif // _LOGIN_H_
