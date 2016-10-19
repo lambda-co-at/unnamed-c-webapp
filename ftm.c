@@ -1,5 +1,14 @@
 /*
  * feature testing software
+ * _POSIX_SOURCE defined
+ * _POSIX_C_SOURCE defined: 200809L
+ * _ISOC99_SOURCE defined
+ * _XOPEN_SOURCE defined: 700
+ * _XOPEN_SOURCE_EXTENDED defined
+ * _LARGEFILE64_SOURCE defined
+ * _ATFILE_SOURCE defined
+ * _GNU_SOURCE defined
+ * _FORTIFY_SOURCE defined
  */
 
 #define _GNU_SOURCE
