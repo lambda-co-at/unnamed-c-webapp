@@ -15,7 +15,7 @@
 #include "login.h"
 
 int
-main(int argc, char* argv[])
+main(int argc, char *argv[])
 {
 #ifdef _POSIX_SOURCE
     printf("_POSIX_SOURCE defined\n");
@@ -68,9 +68,9 @@ main(int argc, char* argv[])
 #ifdef _THREAD_SAFE
     printf("_THREAD_SAFE defined\n");
 #endif
+    
 #ifdef _FORTIFY_SOURCE
     printf("_FORTIFY_SOURCE defined\n");
 #endif
-
     exit(EXIT_SUCCESS);
 }
