@@ -1,25 +1,23 @@
 /*
  * new modular hash function for the sqlite3 interface
- * by David Schuster © 2016  
+ * by David Schuster © 2016 *   
  */
 
 #define _GNU_SOURCE
 #include "login.h"
 
-void hash_func(int algo, void* digest, const void* value, size_t len)
+
+void hash_func(int algo, char* digest, const void* value, size_t len)
 {
   size_t algolen = gcry_md_get_algo_dlen(algo);
-  char* helper = gcry_malloc_secure(16);
   char* byte_result = gcry_malloc_secure(algolen);
   
   gcry_md_hash_buffer(algo, byte_result, value, len);
   
   for (int i = 0; i < algolen; i++)  {
-      sprintf((char*)helper, "%02x", (unsigned char)byte_result[i]);
-      stringconcat((char*)digest, (char*)helper);
-  }
-  gcry_free(helper);
-  gcry_free(byte_result);  
+      sprintf(digest+(i*2), "%02x", (unsigned char)byte_result[i]); 
+  }  
+   
 }
 
 void gcrypt_init()
