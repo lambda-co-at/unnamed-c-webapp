@@ -15,7 +15,7 @@ void hash_func(int algo, char* digest, const void* value, size_t len)
   gcry_md_hash_buffer(algo, byte_result, value, len);
   
   for (int i = 0; i < algolen; i++)  {
-      sprintf(digest+(i*2), "%02x", (unsigned char)byte_result[i]); 
+      sprintf(digest+(i*2), "%02x", (unsigned char)byte_result[i]); // some pointer magic *dancing on the glass of undefined behavior*
   }  
    
 }
