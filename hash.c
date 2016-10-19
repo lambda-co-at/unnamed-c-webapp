@@ -1,6 +1,6 @@
 /*
  * new modular hash function for the sqlite3 interface
- * by David Schuster © 2016 *   
+ * by David Schuster © 2016   
  */
 
 #define _GNU_SOURCE
