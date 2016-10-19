@@ -10,14 +10,14 @@
 void hash_func(int algo, char* digest, const void* value, size_t len)
 {
   size_t algolen = gcry_md_get_algo_dlen(algo);
-  char* byte_result = gcry_malloc_secure(algolen);
+  char* rawResult = gcry_malloc_secure(algolen);
   
-  gcry_md_hash_buffer(algo, byte_result, value, len);
+  gcry_md_hash_buffer(algo, rawResult, value, len);
   
   for (int i = 0; i < algolen; i++)  {
-      sprintf(digest+(i*2), "%02x", (unsigned char)byte_result[i]); // some pointer magic *dancing on the glass of undefined behavior*
-  }  
-  gcry_free(byte_result);
+      sprintf(digest+(i*2), "%02x", (unsigned char)rawResult[i]); 
+  }
+  gcry_free(rawResult);
 }
 
 void gcrypt_init()
