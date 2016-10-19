@@ -16,7 +16,6 @@ int main(int argc, char** argv)
   printf("hashit v0.25 - %s", ctime(&thetime));  
   gcrypt_init();
   int algo;
-  char buffer[1<<12];
   
 start:
   printf("These are the available algorithms: \n\
@@ -48,17 +47,17 @@ start:
     goto start;   
   }
   char* final = gcry_malloc_secure((gcry_md_get_algo_dlen(algo)*2)+1);
-  char* ptr = buffer;
+  char* ptr = gcry_malloc_secure(4096);
   
   printf("What value do you want to hash? ");  
-  fgets(ptr, sizeof buffer, stdin);  
+  fgets(ptr, 4096, stdin);  
   ptr[ strlen(ptr) - 1 ] = '\0'; // remove '\n' of fgets    
   
   hash_func(algo, final, ptr, strlen(ptr));
   printf("%s\n", final);
   
   gcry_free(final);
-  final = NULL;  
+  gcry_free(ptr); 
 
   return 0;    
 }
