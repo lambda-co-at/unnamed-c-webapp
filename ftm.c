@@ -1,10 +1,12 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+/*
+ * feature testing software
+ */
 
+#define _GNU_SOURCE
+#include "login.h"
 
 int
-main(int argc, char *argv[])
+main(int argc, char* argv[])
 {
 #ifdef _POSIX_SOURCE
     printf("_POSIX_SOURCE defined\n");
