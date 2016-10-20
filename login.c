@@ -26,7 +26,7 @@ static int callback (void* logindata,	/* sql_exec passes its forth argument in h
    * thats why we gotta return 0 if we have no match
    * the callback wouldnt get called again for the next row
    */
-  for (int i = 0 ; i < numArgs; i++) {    
+  for (int i = 0; i < numArgs; i++) {    
     if (!strcmp(Db_entries[0], userdata->username)) {        
       isRegistered = true; /* username found in db (if check) -> search for matching pw */
       
