@@ -1,7 +1,8 @@
 /* C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 aka David Schuster © 2011-2016
- * If you think this is useful, use it!  
+ * written by oMeN23 in 2011
+ * If you think this is useful, use it!
+ * copyleft, open and free!
  * file: login.c (main)
  */
 
@@ -26,17 +27,18 @@ static int callback (void* logindata,	/* sql_exec passes its forth argument in h
    * the callback wouldnt get called again for the next row
    */
   for (int i = 0 ; i < numArgs; i++) {
-    if (/*Db_entries[i] != NULL &&*/ !strcmp(azColName[0], "username")) {
+    if (!strcmp(azColName[0], "username")) {
       if (!strcmp(Db_entries[0], userdata->username)) {        
         isRegistered = true; /* username found in db (if check) -> search for matching pw */
       }
-    } if (/*Db_entries[i] != NULL &&*/ !strcmp(azColName[1], "password")) {
-        if (isRegistered && !strcmp(Db_entries[1], userdata->hash)) {
-          isLoggedOn = true; 
-          return 0;
-        }      
-      }   
     }
+    if (!strcmp(azColName[1], "password")) {
+      if (isRegistered && !strcmp(Db_entries[1], userdata->hash)) {
+        isLoggedOn = true; 
+        return 0;
+      }      
+    }   
+  }
   return 0;
 }
 
@@ -68,35 +70,37 @@ bool login(const char* username,	/* username */
   
   if (container == NULL) {
     fprintf(stderr, "Could not allocate memory!\n");
-    abort();
+    exit(-1);
   }
-  container->username = gcry_malloc_secure(USERBUF);
-  container->password = gcry_malloc_secure(USERBUF);
+  container->username = gcry_malloc_secure(USERBUF);  
   container->hash = gcry_malloc_secure(USERBUF * 2);
   
-  if (!gcry_is_secure(container->hash) || !gcry_is_secure(container) || !gcry_is_secure(container->password)) {
+  if (!gcry_is_secure(container->hash) || !gcry_is_secure(container) || !gcry_is_secure(container->username)) {
     fprintf(stderr, "Could not allocate in secure memory!\n");
     exit(2);
   }
   
   strcpy(container->username, username);  /* copy userdata in secure mem */
-  strcpy(container->password, password);
+
 #ifndef HASH
   strcpy(container->hash, password); /* SO IF SOMEBODY TURNS OFF HASHING IT WILL STILL WORK */
 #endif
-  memset((void*)password, 0, stringlength(password)); /* fill the parameter with zeroes - its not secure - then it is */
-  
+
   int err = sqlite3_open(DATABASE,	/* const char *filename - Database filename (UTF-8), defined in the header MACRO USED */
                          &Db_object);	/* sqlite3 **ppDb - OUT: SQLite db handle */
   
   if (err != SQLITE_OK) {
     fprintf(stderr, "Database connection failed, something went wrong.\n");
     exit(3);
-  }    
-  
+  }   
+  int x;
+  for (x = 0; password[x] != NULL ; x++)
+    ;
+    
 #ifdef HASH /* call of the hashing function  -> hash.c .. change to GCRY_MD_TIGER1  */
-  hash_func(GCRY_MD_TIGER, container->hash, container->password, strlen(container->password));  // TODO XXX change 6 with 306 see above for enum decl
+  hash_func(GCRY_MD_TIGER, container->hash, password, x);  // TODO XXX change 6 with 306 see above for enum decl
   fprintf(stderr, "Trying to log in as \n'%s' \nwith hashed-pw \n'%s'\n", container->username, container->hash);
+  memset(password, 0, x);
 #else
   fprintf(stderr, "Trying to log in as '%s'\n", container->username);
 #endif
@@ -112,12 +116,7 @@ bool login(const char* username,	/* username */
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
       fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
-    }
-    
-    /*if (sql_statement == NULL) {
-     *            fprintf(stderr, "Cannot pass NULL Pointer as SQL statement!\n");
-     *            abort(); not possible as for convenience, this is turned off if a null ptr is supplied
-  }*/
+    }   
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
       fprintf(stderr, "Cannot pass empty or nonsensical string as SQL statement!\n");
       exit(5);
@@ -152,22 +151,15 @@ bool login(const char* username,	/* username */
   /* clean up the DB connection */
   sqlite3_close(Db_object);
   
-  /* BUFFER FLUSH */
-  memset(container->hash, 0, USERBUF * 2);
-  memset(container->password, 0, USERBUF);
-  memset(container->username, 0, USERBUF);
-  /* fprintf(stderr, "VAR TEST usr1: %s %s %s %s %s\n", username, password, container->username,
-   * container->password, container->hash); // MEM TEST FUNC to see if mem was overwritten */
   
+  memset(container->hash, 0, USERBUF * 2);  
+  memset(container->username, 0, USERBUF);
+   
   /* release the memory - no data left in RAM */
-  gcry_free(container->hash);
-  gcry_free(container->password);
+  gcry_free(container->hash);  
   gcry_free(container->username);
   gcry_free(container);
-  container->password = NULL;
-  container->hash = NULL;
-  container->username = NULL;
-  container = NULL;
+  memset(container, 0, sizeof *container);
   /* set ptrs null, username is the only variable left intact -> see above
    * the whole login_data_t container is now overwritten - also the passed password argument (around line 104) */
   
