@@ -57,8 +57,7 @@ change login.h."
 
 /* user data definitions - mostly hidden - only in use in the interior of the login func */
 typedef struct login_data {
-    char* username;
-    char* password;
+    char* username;    
     char* hash;
 } *login_data_t;
 
