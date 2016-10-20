@@ -6,6 +6,7 @@
  * file: login.c (main)
  */
 
+#define _GNU_SOURCE
 #include "login.h"
 
 /* does the user exist in the db */
