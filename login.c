@@ -1,4 +1,5 @@
-/* C to sqlite DB interface (for logins)
+/* 
+ * C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
  * written by oMeN23 in 2011
  * If you think this is useful, use it!
@@ -68,7 +69,7 @@ bool login(const char* username,	/* username */
   
   if (container == NULL) {
     fprintf(stderr, "Could not allocate memory!\n");
-    exit(-1);
+    abort();
   }
   container->username = gcry_malloc_secure(USERBUF);  
   container->hash = gcry_malloc_secure(USERBUF * 2);
@@ -91,14 +92,11 @@ bool login(const char* username,	/* username */
     fprintf(stderr, "Database connection failed, something went wrong.\n");
     exit(3);
   }   
-  int x;
-  for (x = 0; password[x] != NULL ; x++)
-    ;
-    
+      
 #ifdef HASH /* call of the hashing function  -> hash.c .. change to GCRY_MD_TIGER1  */
-  hash_func(GCRY_MD_TIGER, container->hash, password, x);  // TODO XXX change 6 with 306 see above for enum decl
+  hash_func(GCRY_MD_TIGER, container->hash, password, stringlength(password));  // TODO XXX change 6 with 306 see above for enum decl
   fprintf(stderr, "Trying to log in as \n'%s' \nwith hashed-pw \n'%s'\n", container->username, container->hash);
-  memset(password, 0, x);
+  memset(password, 0, stringlength(password));
 #else
   fprintf(stderr, "Trying to log in as '%s'\n", container->username);
 #endif
@@ -114,7 +112,12 @@ bool login(const char* username,	/* username */
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
       fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
-    }   
+    }
+    
+    /*if (sql_statement == NULL) {
+     *            fprintf(stderr, "Cannot pass NULL Pointer as SQL statement!\n");
+     *            abort(); not possible as for convenience, this is turned off if a null ptr is supplied
+  }*/
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
       fprintf(stderr, "Cannot pass empty or nonsensical string as SQL statement!\n");
       exit(5);
@@ -152,7 +155,9 @@ bool login(const char* username,	/* username */
   
   memset(container->hash, 0, USERBUF * 2);  
   memset(container->username, 0, USERBUF);
-   
+  /* fprintf(stderr, "VAR TEST usr1: %s %s %s %s %s\n", username, password, container->username,
+   * container->password, container->hash); // MEM TEST FUNC to see if mem was overwritten */
+  
   /* release the memory - no data left in RAM */
   gcry_free(container->hash);  
   gcry_free(container->username);
