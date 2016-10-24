@@ -1,7 +1,7 @@
 /* 
  * C to sqlite DB interface (for logins)
  * with hashing mechanisms using gcrypt
- * written by oMeN23 in 2011
+ * written by oMeN23 in 2012-2016 ©
  * If you think this is useful, use it!
  * copyleft, open and free!
  * file: login.c (main)
@@ -112,12 +112,8 @@ bool login(const char* username,	/* username */
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
       fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
-    }
-    
-    /*if (sql_statement == NULL) {
-     *            fprintf(stderr, "Cannot pass NULL Pointer as SQL statement!\n");
-     *            abort(); not possible as for convenience, this is turned off if a null ptr is supplied
-  }*/
+    }    
+   
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
       fprintf(stderr, "Cannot pass empty or nonsensical string as SQL statement!\n");
       exit(5);
@@ -143,21 +139,15 @@ bool login(const char* username,	/* username */
                      &errormsg);		/* Error msg written here */
   
   
-  if (err != SQLITE_OK) { 
-    //	    ^^ er == 4 ? callback returned 1 (or any nonzero value)			
-    //      fprintf(stderr, "SQL notice: callback requested query abort because a match was found.\n"); old logic part          
+  if (err != SQLITE_OK) {           
     fprintf(stderr, "SQL error: %s\n", errormsg ); // sqlite3_errmsg(Db_object)
     sqlite3_free(errormsg);
   }
   /* clean up the DB connection */
   sqlite3_close(Db_object);
-  
-  
+    
   memset(container->hash, 0, USERBUF * 2);  
-  memset(container->username, 0, USERBUF);
-  /* fprintf(stderr, "VAR TEST usr1: %s %s %s %s %s\n", username, password, container->username,
-   * container->password, container->hash); // MEM TEST FUNC to see if mem was overwritten */
-  
+  memset(container->username, 0, USERBUF);    
   /* release the memory - no data left in RAM */
   gcry_free(container->hash);  
   gcry_free(container->username);
@@ -224,8 +214,6 @@ int main(int argc, char* argv[])
   else
   {
     /* log-in didnt succeed, handle it how you like ... (call main again whatever) */
-    return 1;
-    
+    return 1;    
   }
 }
-
