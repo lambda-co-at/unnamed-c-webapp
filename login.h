@@ -34,7 +34,7 @@ change login.h."
 
 #define GCRYPT_NO_DEPRECATED // we dont want to use old library routines
 #define HASH	/* IF THIS TOKEN IS UNDEF'D YOU HAVE A SQLITE INTERFACE PROGRAM WITHOUT HASHING CAPABILITIES (pass match is done plain-text - so dont undef this) */
-#define DATABASE	"ex1.db"	/* path to a sqlite3 database - specify full db path if db is not in binary's folder or launch binary from db's folder */
+#define DATABASE	"ex1.sql"	/* path to a sqlite3 database - specify full db path if db is not in binary's folder or launch binary from db's folder */
 
 /* multi-platform string routines */
 #if defined _GNU_SOURCE
