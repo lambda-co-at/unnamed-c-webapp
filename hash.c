@@ -9,7 +9,7 @@
 
 void hash_func(int algo, char* digest, const void* value, size_t len)
 {
-  size_t algolen = gcry_md_get_algo_dlen(algo);
+  size_t algolen  = gcry_md_get_algo_dlen(algo);
   char* rawResult = gcry_malloc_secure(algolen);
   
   gcry_md_hash_buffer(algo, rawResult, value, len);
