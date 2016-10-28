@@ -39,19 +39,19 @@ change login.h."
 /* multi-platform string routines */
 #if defined _GNU_SOURCE
  size_t strnlen(const char* string, size_t maxlen);
- #define stringlength(x)	    strnlen(x, USERBUF)
- #define longstringlength(x)	  strnlen(x, LARGEBUF + 40)
- #define stringconcat(s1, s2)	 strncat(s1, s2, USERBUF)
- #define stringcompare(s1, s2) strncmp(s1, s2, USERBUF*2)
+ #define stringlength(x)        strnlen(x, USERBUF)
+ #define longstringlength(x)    strnlen(x, LARGEBUF + 40)
+ #define stringconcat(s1, s2)   strncat(s1, s2, USERBUF)
+ #define stringcompare(s1, s2)  strncmp(s1, s2, USERBUF*2)
 #elif _BSD_SOURCE
- #define stringconcat(s1, s2)	  strncat(s1, s2, USERBUF)
- #define longstringlength(x)	   strlen(x)
- #define stringlength(x)	       strlen(x) 
+ #define stringconcat(s1, s2)   strncat(s1, s2, USERBUF)
+ #define longstringlength(x)    strlen(x)
+ #define stringlength(x)        strlen(x) 
  #define stringcompare(s1, s2)  strncmp(s1, s2, USERBUF*2)
 #else	/* !_GNU_SOURCE && !_BSD_SOURCE */
  #define longstringlength(x)    strlen(x)
- #define stringlength(x)	       strlen(x)
- #define stringconcat(s1, s2)	  strcat(s1, s2)
+ #define stringlength(x)        strlen(x)
+ #define stringconcat(s1, s2)   strcat(s1, s2)
  #define stringcompare(s1, s2)  strcmp(s1, s2) 
 #endif
 
