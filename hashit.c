@@ -9,7 +9,7 @@
 #define _GNU_SOURCE
 #include "login.h"
 
-int main(int argc, char** argv) 
+int main(int argc, char* argv[]) 
 {
   time_t thetime = time(NULL);
 
