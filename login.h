@@ -6,8 +6,7 @@
  * copyleft, open and free!
  * file: login.h (headerfile)
  */
-#ifndef _LOGIN_H_
-#define _LOGIN_H_
+
 #pragma once // NOTE: does this work on our compiler (gcc) ? (back of my mind tells me only msvc supports this) 
 
 /* This code conforms to the ISO C99 standard and makes heavy use of GNU extensions */
@@ -84,4 +83,4 @@ void build_sql_string(char* dest, const char* username);
  */
 void hash_func(int algo, char* digest, const void* value, size_t len);
 void gcrypt_init(void);
-#endif // _LOGIN_H_
+
