@@ -77,10 +77,8 @@ bool login(const char* username,	/* username */
   if (!gcry_is_secure(container->hash) || !gcry_is_secure(container) || !gcry_is_secure(container->username)) {
     fprintf(stderr, "Could not allocate in secure memory!\n");
     exit(2);
-  }
-  
+  }  
   stringcopy(container->username, username);  /* copy userdata in secure mem */
-
 #ifndef HASH
   stringcopy(container->hash, password); /* SO IF SOMEBODY TURNS OFF HASHING IT WILL STILL WORK */
 #endif
@@ -120,7 +118,7 @@ bool login(const char* username,	/* username */
     }
     /* SQL OK copy it into our string - dest array should be clean so string isnt garbage */
     memset((void*)sql, 0, sizeof sql);
-    strcpy(sql, sql_statement);
+    stringcopy(sql, sql_statement);
   }
   else /* use default sql string builder mechanism (fast and convenient and safe) 1 call per login/username */
     build_sql_string(sql, container->username);
