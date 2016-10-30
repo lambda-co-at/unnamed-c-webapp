@@ -72,7 +72,7 @@ bool login(const char* username,	/* username */
     abort();
   }
   container->username = gcry_malloc_secure(USERBUF);  
-  container->hash = gcry_malloc_secure(USERBUF * 2);
+  container->hash = gcry_malloc_secure(USERBUF);
   
   if (!gcry_is_secure(container->hash) || !gcry_is_secure(container) || !gcry_is_secure(container->username)) {
     fprintf(stderr, "Could not allocate in secure memory!\n");
