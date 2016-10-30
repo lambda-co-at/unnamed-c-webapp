@@ -28,7 +28,7 @@
 of this program, the other features are deprecated! \
 Tried to define GNU extensions, if this fails \
 change login.h."
-#endif // ifndef _GNU_SOURCE
+#endif /* !_GNU_SOURCE */
 
 #define GCRYPT_NO_DEPRECATED // we dont want to use old library routines
 #define HASH	/* IF THIS TOKEN IS UNDEF'D YOU HAVE A SQLITE INTERFACE PROGRAM WITHOUT HASHING CAPABILITIES (pass match is done plain-text - so dont undef this) */
