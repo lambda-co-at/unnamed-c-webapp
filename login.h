@@ -22,7 +22,6 @@
 #include <errno.h>
 #include <time.h>
 
-
 #ifndef _GNU_SOURCE
 #warning "Using GNU EXTENSIONS highly improves security \
 of this program, the other features are deprecated! \
@@ -58,7 +57,7 @@ change login.h."
 
 /* buffers */
 #define LARGEBUF	(1 << 12) 
-#define USERBUF		(1 << 8) 
+#define USERBUF		(1 << 9) 
 
 /* user data definitions - mostly hidden - only in use in the interior of the login func */
 typedef struct login_data {
