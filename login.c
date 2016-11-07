@@ -180,10 +180,10 @@ bool login(const char* username,	/* username */
  */
 void build_sql_string(char* dest, const char* username)
 {
-  char sql_string[LARGEBUF] = "select * from users where username = '"; /* users is the name of the SQL table */  
+  char sql_string[USERBUF] = "select * from users where username = '"; /* users is the name of the SQL table */  
   stringconcat(sql_string, username); /* FUNC MACRO USED */
   stringconcat(sql_string, "';");
-  memset(dest, 0, LARGEBUF-1); /* clear mem where sql string is to be written - so theres no garbage */
+  memset(dest, 0, USERBUF-1); /* clear mem where sql string is to be written - so theres no garbage */
   stringcopy(dest, sql_string);
 }
 
