@@ -109,7 +109,7 @@ bool login(const char* username,	/* username */
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
       fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
-      build_sql_string(sql, container->username);
+      exit(5);
     }
         
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
