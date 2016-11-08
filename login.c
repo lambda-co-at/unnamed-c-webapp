@@ -98,9 +98,8 @@ bool login(const char* username,	/* username */
 #else
   fprintf(stderr, "Trying to log in as '%s'\n", container->username);
 #endif
-  /* turn off self-supplied SQL if a null ptr or empty string is supplied */
+  /* turn off self-supplied SQL if a null ptr or empty string is supplied */  
   
-  /* SQL STUFF AND BUILDER */
   char sql[LARGEBUF];
   if (own_sql)  {
     if (longstringlength(sql_statement) >= LARGEBUF) { /* FUNC MACRO USED */
@@ -110,6 +109,7 @@ bool login(const char* username,	/* username */
     if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
       own_sql = false;
       fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
+      build_sql_string(sql, container->username);
     }
         
     if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
@@ -117,7 +117,7 @@ bool login(const char* username,	/* username */
       exit(5);
     }
     /* SQL OK copy it into our string - dest array should be clean so string isnt garbage */
-    memset((void*)sql, 0, sizeof sql);
+    memset(sql, 0, sizeof sql);
     stringcopy(sql, sql_statement);
   }
   else /* use default sql string builder mechanism (fast and convenient and safe) 1 call per login/username */
@@ -126,24 +126,16 @@ bool login(const char* username,	/* username */
   /* DATABASE CALL */
   err = sqlite3_exec(Db_object,		/* An open database ![IMPORTANT -> callback is called for every ROW]! */
                      sql,			/* SQL to be evaluated */
-                     callback,		/* Callback function */
-                     /* int (*callback)(void* freeSlot, int numDbEntries, char** DBEntries, char** ColumnName) -
-                      * arg1 is a free pointer specified by the sqlite3 calling convention interface -
-                      * I put the data to compare against in here (could be unused too)
-                      * arg2 NumDbEntries retrieves the count of entries in that row,
-                      * arg3 DBEntries is an array of strings of the data in that row and
-                      * arg4 ColumnName is an array of strings representing the column. */
+                     callback,		/* Callback function */                     
                      (void*)container,	/* 1st argument to callback */
                      &errormsg);		/* Error msg written here */
-  
-  
+    
   if (err != SQLITE_OK) {            
     fprintf(stderr, "SQL error: %s\n", errormsg); /* sqlite3_errmsg(Db_object) */
     sqlite3_free(errormsg);
   }
   /* clean up the DB connection */
-  sqlite3_close(Db_object);  
-  
+  sqlite3_close(Db_object);   
   memset(container->hash, 0, USERBUF);  
   memset(container->username, 0, USERBUF);
    
