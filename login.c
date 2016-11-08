@@ -178,13 +178,9 @@ bool login(const char* username,	/* username */
  * arg2 is to where to write the string
  * already in auto use of the login function if third param is false (of the login func)
  */
-void build_sql_string(char* dest, const char* username)
+inline void build_sql_string(char* dest, const char* username)
 {
-  char sql_string[USERBUF] = "select * from users where username = '"; /* users is the name of the SQL table */  
-  stringconcat(sql_string, username); /* FUNC MACRO USED */
-  stringconcat(sql_string, "';");
-  memset(dest, 0, USERBUF-1); /* clear mem where sql string is to be written - so theres no garbage */
-  stringcopy(dest, sql_string);
+  sprintf(dest, "select * from users where username = '%s';", username);
 }
 
 /* Example main ... this is intented to be a "library" - only a glue code
