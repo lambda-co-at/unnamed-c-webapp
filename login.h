@@ -37,7 +37,7 @@ change login.h."
 #ifdef _GNU_SOURCE
  size_t strnlen(const char* string, size_t maxlen);
  #define stringlength(x)         strnlen(x, USERBUF)
- #define longstringlength(x)     strnlen(x, LARGEBUF + 40)
+ #define longstringlength(x)     strnlen(x, LARGEBUF)
  #define stringconcat(s1, s2)    strncat(s1, s2, USERBUF)
  #define stringcompare(s1, s2)   strncmp(s1, s2, USERBUF)
  #define stringcopy(s1, s2)      strncpy(s1, s2, USERBUF)
