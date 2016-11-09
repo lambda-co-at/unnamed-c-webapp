@@ -9,6 +9,10 @@
 
 #define _GNU_SOURCE
 #include "login.h"
+/* small function to build the matching
+ * sql string for our purposes
+ * arg1 is the destination memory
+ * arg2 is the username */
 static inline void  build_sql_string(char* dest, const char* username)
 {
   sprintf(dest, "select * from users where username = '%s';", username);  
