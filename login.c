@@ -53,9 +53,7 @@ static int callback (void* logindata,	/* sql_exec passes its forth argument in h
  * this will result in return values true as ok and false otherwise
  */
 bool login(const char* username,	/* username */
-           char* password,		/* password -> gets deleted for security reasons */
-           bool own_sql,		/* indicates if you want your own sql statement executed against the DB */
-           const char* sql_statement)	/* the sql statement to be executed against the Database or NULL */
+           char* password)		/* password -> gets deleted for security reasons */         
 {
   /* check for user overflow attempts */
   if (stringlength(username) > USERBUF - 6 || stringlength(password) > USERBUF - 6) {
@@ -108,28 +106,8 @@ bool login(const char* username,	/* username */
 #endif
   /* turn off self-supplied SQL if a null ptr or empty string is supplied */  
   
-  char sql[LARGEBUF];
-  if (own_sql)  {
-    if (longstringlength(sql_statement) >= LARGEBUF) { /* FUNC MACRO USED */
-      fprintf(stderr, "SQL statement too long. Max. %d characters.\n", LARGEBUF);
-      exit(4);
-    }
-    if (sql_statement == NULL || strcmp(sql_statement, "") == 0) {
-      own_sql = false;
-      fprintf(stderr, "login(...) called with wrong args - arg3 is true and arg4 is NULL or empty!\n");
-      exit(5);
-    }
-        
-    if (stringlength(sql_statement) < 6) { /* FUNC MACRO USED */
-      fprintf(stderr, "Cannot pass empty or nonsensical string as SQL statement!\n");
-      exit(5);
-    }
-    /* SQL OK copy it into our string - dest array should be clean so string isnt garbage */
-    memset(sql, 0, sizeof sql);
-    stringcopy(sql, sql_statement);
-  }
-  else /* use default sql string builder mechanism (fast and convenient and safe) 1 call per login/username */
-    build_sql_string(sql, container->username);
+  char sql[LARGEBUF];  
+  build_sql_string(sql, container->username);
   
   /* DATABASE CALL */
   err = sqlite3_exec(Db_object,		/* An open database ![IMPORTANT -> callback is called for every ROW]! */
@@ -185,10 +163,8 @@ int main(int argc, char* argv[])
   
   /* login -> returns a bool indicating success */
   bool logged_on = login(user,	/* self expl this variable will come back unchanged */
-                         pass,	/* this variable will be garbage after the login */
-                         false,	/* own sql statement suppplied as arg4(true) or default func(false), I'd go with this setting */
-                         NULL);	/* sql string like "select * from users;" or NULL pointer for default func */
-  
+                         pass);	/* this variable will be garbage after the login */
+                           
   if (logged_on)
   {
     /* log-in succeeded - do what you like here */
@@ -197,8 +173,7 @@ int main(int argc, char* argv[])
   else
   {
     /* log-in didnt succeed, handle it how you like ... (call main again whatever) */
-    return 1;
-    
+    return 1;    
   }
 }
 
