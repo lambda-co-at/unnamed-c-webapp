@@ -9,6 +9,7 @@
 
 #define _GNU_SOURCE
 #include "login.h"
+extern inline void build_sql_string(char*, const char*);
 
 /* does the user exist in the db */
 bool isRegistered = false;
