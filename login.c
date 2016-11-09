@@ -172,17 +172,6 @@ bool login(const char* username,	/* username */
   return isLoggedOn;
 }
 
-/* small function to build the matching
- * sql string for our purposes
- * arg1 is the username
- * arg2 is to where to write the string
- * already in auto use of the login function if third param is false (of the login func)
- */
-inline void build_sql_string(char* dest, const char* username)
-{
-  sprintf(dest, "select * from users where username = '%s';", username);
-}
-
 /* Example main ... this is intented to be a "library" - only a glue code
  * main will exit with retval 0 if everything is ok
  */
