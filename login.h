@@ -77,9 +77,7 @@ bool login(const char* username, char* password, bool own_sql_statement_on, cons
  * sql string for our purposes
  * arg1 is the username
  * arg2 is to where to write the string */
-inline void build_sql_string(char* dest, const char* username) {
- sprintf(dest, "select * from users where username = '%s';", username);
-}
+
 /* this function calculates a string which represents
  * the hash of the user's password
  * digest has to be min. gcry_md_get_algo_dlen(algo)*2
