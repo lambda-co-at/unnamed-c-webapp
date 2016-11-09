@@ -67,12 +67,7 @@ typedef struct login_data {
 
 
 /* function prototypes */
-/* in this function im trying to handle the login event and interface with sqlite
- * this will result in return values true as ok and false otherwise
- * arg 1 and 2 are self explanatory (arg2 gets zero'd out in the process)
- * arg3 is a bool asking if you want to supply your own SQL
- * if arg3 is true supply your SQL statement as arg4 else NULL */
-bool login(const char* username, char* password, bool own_sql_statement_on, const char* sql_statement);
+
 /* this function calculates a string which represents
  * the hash of the user's password
  * digest has to be min. gcry_md_get_algo_dlen(algo)*2
