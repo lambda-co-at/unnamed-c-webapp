@@ -73,11 +73,6 @@ typedef struct login_data {
  * arg3 is a bool asking if you want to supply your own SQL
  * if arg3 is true supply your SQL statement as arg4 else NULL */
 bool login(const char* username, char* password, bool own_sql_statement_on, const char* sql_statement);
-/* small function to build the matching
- * sql string for our purposes
- * arg1 is the username
- * arg2 is to where to write the string */
-
 /* this function calculates a string which represents
  * the hash of the user's password
  * digest has to be min. gcry_md_get_algo_dlen(algo)*2
