@@ -8,7 +8,7 @@ are lazy enough to check your passwords or keys plain-text.
 
 	Friday, 14.10.2016 - COMPLETE REWRITE OF MODULAR HASHING SYSTEM
 	- ongoing rewrite of static functions that are only needed for one reason, made the login function easier (no more self supplied sql)
-	- this is a login interface, thats what it does - no more cost for database call than needed (rewrite of callback code)
+	- this is a login interface, thats what it does - no more cost for database calls than needed (rewrite of callback code)
 	- future hopes: cgi interface to get this running on a web-server (reading the book atm)
 	
 This software now produces the right digests. Sorry there is no test database but everything should be working now.
