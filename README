@@ -6,6 +6,16 @@ text. So it is designed for a login-procedure and was thought to be useful
 for CGI login handling. The hashing capabilities can be turnt off in case you
 are lazy enough to check your passwords or keys plain-text.
 
+	Friday, 14.10.2016 - COMPLETE REWRITE OF MODULAR HASHING SYSTEM
+	- ongoing rewrite of static functions that are only needed for one reason, made the login function easier (no more self supplied sql)
+	- this is a login interface, thats what it does - no more cost for database call than needed (rewrite of callback code)
+	- future hopes: cgi interface to get this running on a web-server (reading the book atm)
+	
+This software now produces the right digests. Sorry there is no test database but everything should be working now.
+Thanks, David
+
+p.s.: maybe try "user" as first program parameter and "test" as second - it should work (=
+
 OK enough -- this is what this package provides:
 login.c - login routine and sqlite3 callback (with an example main function)
 hash.c - the hashing function which is used in the login program 
@@ -13,7 +23,7 @@ hash.c - the hashing function which is used in the login program
 hashit.c - a small utility that can generate digests of all implemented gcrypt
 	   hashing algorithms (e.g. for generation of your keys)
 ftm.c - feature test macros
-login.h - a header file where all the fun is defined :)
+login.h - a header file where all crossover fun is defined :)
 
 There is a Makefile for convenience - just type "make" and if you have a debian based
 system with "libgcrypt-dev" and "libsqlite3-dev" installed everything should work OOB.
@@ -36,9 +46,3 @@ If you have problems setting this up - contact me! I cannot promise that I will 
 because my inbox is always really full. The string macros supplied use GNU extensions
 or BSD versions of the standard implementation. (strlen, strcat, strcpy)
 	
-	Friday, 14.10.2016 - COMPLETE REWRITE OF MODULAR HASHING SYSTEM
-	
-This software now produces the right digests. Sorry there is no test database but everything should be working now.
-Thanks, David
-
-p.s.: maybe try "user" as first program parameter and "test" as second - it should work (=
