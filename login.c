@@ -104,16 +104,14 @@ bool login(const char* username,	/* username */
 #else
   fprintf(stderr, "Trying to log in as '%s'\n", container->username);
 #endif
-  /* turn off self-supplied SQL if a null ptr or empty string is supplied */  
-  
-  char sql[LARGEBUF];  
-  build_sql_string(sql, container->username);
-  
+    
+  char sql[USERBUF];  
+  build_sql_string(sql, container->username);  
   /* DATABASE CALL */
   err = sqlite3_exec(Db_object,		/* An open database ![IMPORTANT -> callback is called for every ROW]! */
                      sql,			/* SQL to be evaluated */
                      callback,		/* Callback function */                     
-                     (void*)container,	/* 1st argument to callback */
+                     container,	/* 1st argument to callback */
                      &errormsg);		/* Error msg written here */
     
   if (err != SQLITE_OK) {            
