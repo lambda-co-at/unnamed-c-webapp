@@ -6,7 +6,6 @@
 #define _GNU_SOURCE
 #include "login.h"
 
-
 void hash_func(int algo, char* digest, const void* value, size_t len)
 {
   size_t algolen  = gcry_md_get_algo_dlen(algo);
