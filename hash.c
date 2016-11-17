@@ -15,7 +15,7 @@ void hash_func(int algo, char* digest, const void* value, size_t len)
   gcry_md_hash_buffer(algo, rawResult, value, len);
   
   for (int i = 0; i < algolen; i++) {
-    sprintf(digest+(i*2), "%02x", (unsigned char)rawResult[i]); // pointer magic *dancing on broken glass of undefined behavior*
+    sprintf(digest+(i*2), "%02x", (unsigned char)rawResult[i]); /* pointer magic */ 
   }
   gcry_free(rawResult);
 }
@@ -35,6 +35,6 @@ void gcrypt_init()
   gcry_control(GCRYCTL_SUSPEND_SECMEM_WARN),
   gcry_control(GCRYCTL_INIT_SECMEM, 65536, 0),
   gcry_control(GCRYCTL_RESUME_SECMEM_WARN),
-  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
+  gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0),
   initialized = true;
 }
