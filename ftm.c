@@ -1,7 +1,20 @@
-#include <stdio.h>
-#include <unistd.h>
-#include <stdlib.h>
+/*
+ * feature testing software
+ * _POSIX_SOURCE defined
+ * _POSIX_C_SOURCE defined: 200809L
+ * _ISOC99_SOURCE defined
+ * _ISOC11_SOURCE defined
+ * _XOPEN_SOURCE defined: 700
+ * _XOPEN_SOURCE_EXTENDED defined
+ * _LARGEFILE64_SOURCE defined
+ * _DEFAULT_SOURCE defined
+ * _ATFILE_SOURCE defined
+ * _GNU_SOURCE defined
+ * _FORTIFY_SOURCE defined
+ */
 
+#define _GNU_SOURCE
+#include "login.h"
 
 int
 main(int argc, char *argv[])
@@ -16,6 +29,10 @@ main(int argc, char *argv[])
 
 #ifdef _ISOC99_SOURCE
     printf("_ISOC99_SOURCE defined\n");
+#endif
+
+#ifdef _ISOC11_SOURCE
+    printf("_ISOC11_SOURCE defined\n");
 #endif
 
 #ifdef _XOPEN_SOURCE
@@ -41,6 +58,10 @@ main(int argc, char *argv[])
 #ifdef _SVID_SOURCE
     printf("_SVID_SOURCE defined\n");
 #endif
+    
+#ifdef _DEFAULT_SOURCE
+    printf("_DEFAULT_SOURCE defined\n");
+#endif
 
 #ifdef _ATFILE_SOURCE
     printf("_ATFILE_SOURCE defined\n");
@@ -57,9 +78,10 @@ main(int argc, char *argv[])
 #ifdef _THREAD_SAFE
     printf("_THREAD_SAFE defined\n");
 #endif
+    
 #ifdef _FORTIFY_SOURCE
     printf("_FORTIFY_SOURCE defined\n");
 #endif
-
     exit(EXIT_SUCCESS);
 }
+
